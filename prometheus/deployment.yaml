@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+    version: v3.4.2
+spec:
+  selector:
+    matchLabels:
+      app: prometheus
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - name: prometheus
+        image: prom/prometheus:v3.4.2
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/prometheus
+        ports:
+        - containerPort: 9090
+
+      volumes:
+          - name: config-volume
+            configMap:
+              # Provide the name of the ConfigMap containing the files you want
+              # to add to the container
+              name: prometheus-config
